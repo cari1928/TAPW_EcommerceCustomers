@@ -59,8 +59,6 @@ public class CustomerOrdersActivity extends ListActivity {
     }
 
     public void ListOrders() {
-
-
         try {
             JSONObject jsonResponse = new JSONObject(jsonResult);
             JSONArray jsonMainNode = jsonResponse.optJSONArray("orders");

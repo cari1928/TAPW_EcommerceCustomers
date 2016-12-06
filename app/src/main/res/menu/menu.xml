@@ -2,4 +2,5 @@
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
     <item android:id="@+id/mnuNew" android:title="Nuevo" />
+    <item android:id="@+id/mnuGrafica1" android:title="Gráfica 1" />
 </menu>

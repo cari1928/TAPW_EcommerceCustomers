@@ -17,11 +17,13 @@ import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -57,14 +59,14 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         NukeSSLCerts.nuke();
 
 
-        //mostrarLogin();
+        mostrarLogin();
 
         list = (ListView) findViewById(R.id.listCustomers);
         //list = getListView();
         list.setOnItemClickListener(listenerOrdenes);
         registerForContextMenu(list);
 
-        loadCustomers();
+        //loadCustomers();
 
     }
 
@@ -83,6 +85,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.mnuNew:
                 newCustomer();
                 break;
+
+            case R.id.mnuGrafica1:
+                Intent grafica1 = new Intent(this, Grafica1Activity.class);
+                startActivity(grafica1);
+                //loadSales();
+                break;
+
             default:
                 bandera = super.onOptionsItemSelected(item);
         }
@@ -97,7 +106,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             menu.setHeaderTitle("Opciones");
             MenuInflater inflater=getMenuInflater();
             inflater.inflate(R.menu.customer_menu, menu);
-
         }
     }
 
@@ -212,6 +220,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     private void validaAcceso () {
         String username = txtUsername.getText().toString();
         String password = txtPassword.getText().toString();
+        TextView tvNombre = (TextView) findViewById(R.id.user);
 
         LoginTask tarea = new LoginTask(this);
         tarea.setUsername(username);
@@ -228,7 +237,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Toast.makeText(MainActivity.this, loginResult, Toast.LENGTH_SHORT).show();
 
-
+        //creación de web service propio
         try {
             JSONObject jso = new JSONObject(loginResult);
             JSONArray jsonMainNode = jso.optJSONArray("auth");
@@ -237,8 +246,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
                 JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
                 Boolean valido = jsonChildNode.optBoolean("valido");
-                if (valido == true) {
+                String rol = jsonChildNode.optString("rol");
+                String nombre_completo = jsonChildNode.optString("nombre_completo");
+
+                if (valido == true && rol.equals("administrator")) {
                     dLogin.dismiss();
+                    loadCustomers();
+                    tvNombre.setText(nombre_completo);
                 } else {
                     Toast.makeText(this, "" +
                                     "Usuario y/o contrase;a no validos",

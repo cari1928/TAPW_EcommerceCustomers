@@ -74,6 +74,7 @@ public class CustomerAdapter extends BaseAdapter {
         rowView.setTag(item.getId());
         //String sUrl = item.getImageUrl();
 
+        //se lee la imagen
         String sUrl = "https://www.gravatar.com/avatar/" + Utils.md5(item.getEmail().toLowerCase());
 
         System.out.println("URL GRAVATAR " + sUrl);
