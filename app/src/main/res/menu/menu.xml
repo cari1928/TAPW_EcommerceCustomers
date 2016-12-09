@@ -1,6 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <menu xmlns:android="http://schemas.android.com/apk/res/android">
 
-    <item android:id="@+id/mnuNew" android:title="Nuevo" />
-    <item android:id="@+id/mnuGrafica1" android:title="Gráfica 1" />
+    <item android:id="@+id/mnuProductos" android:title="Productos" />
+    <item android:id="@+id/mnuCategorias" android:title="Categorías" />
+    <item android:id="@+id/mnuNewCliente" android:title="Nuevo Cliente" />
+    <item android:id="@+id/mnuNewPedido" android:title="Nuevo Pedido" />
+    <item android:id="@+id/mnuNewCupon" android:title="Nuevo Cupón" />
+    <item android:id="@+id/mnuGrafica1" android:title="Reporte de Ventas" />
 </menu>

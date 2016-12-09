@@ -78,10 +78,6 @@ public class NewCustomerActivity extends Activity implements View.OnClickListene
 
         tarea.execute(new String[] { MainActivity.url });
 
-        //String json_customer = Json.toJSon(customer);
-        //Toast.makeText(NewCustomerActivity.this, json_customer, Toast.LENGTH_LONG).show();
-        //System.out.println(json_customer);
-
     }
 
 }

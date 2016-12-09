@@ -43,13 +43,19 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     public static String consumer_key    = "ck_8610d1b7c089c88b439f3d8102d56ad1ef23b12f";
     public static String consumer_secret = "cs_659b8deee047824dff82defb6354d47823b01fdb";
     public static String url = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/customers";
+    public static String role = "";
     String auth_url = "https://tapw-proyecto-c3-cari1928.c9users.io/auth_users.php";
     String jsonResult, loginResult;
     Dialog dLogin;
     CustomerAdapter cAdapter;
-
     Button btnAceptar, btnCancelar;
     EditText txtUsername, txtPassword;
+
+    Menu menu;
+    private boolean isChangedStat = false;
+    private static final int MENUITEM = Menu.FIRST;
+    private static final int MENUITEM2 = 2;
+    private final int ID_MENU_EXIT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -63,10 +69,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list = (ListView) findViewById(R.id.listCustomers);
         list.setOnItemClickListener(listenerOrdenes);
         registerForContextMenu(list);
+
+        //loadCustomers();
     }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
+        this.menu = menu;;
         getMenuInflater().inflate(R.menu.menu, menu);
         return true;
     }
@@ -76,18 +85,26 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         int id = item.getItemId();
         Boolean bandera = true;
 
-        switch(id) {
-            case R.id.mnuNew:
-                newCustomer();
-                break;
-
-            case R.id.mnuGrafica1:
-                loadSales();
-                break;
-
-            default:
-                bandera = super.onOptionsItemSelected(item);
+        if(role.equals("administrator")) {
+            switch (id) {
+                case 2:
+                    newCustomer();
+                    break;
+                case 6:
+                    loadSales();
+                    break;
+                default:
+                    bandera = super.onOptionsItemSelected(item);
+            }
+        } else if(role.equals("customer")) {
+            switch (id) {
+                default:
+                    bandera = super.onOptionsItemSelected(item);
+            }
+        } else {
+            bandera = super.onOptionsItemSelected(item);
         }
+
         return bandera;
     }
 
@@ -267,6 +284,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     dLogin.dismiss();
                     loadCustomers();
                     tvNombre.setText(nombre_completo);
+                    role = rol;
+                    isChangedStat = false;
+                } else if(valido == true && rol.equals("customer")) {
+                    dLogin.dismiss();
+                    tvNombre.setText(nombre_completo);
+                    role = rol;
+                    isChangedStat = true;
                 } else {
                     Toast.makeText(this, "" + "Usuario y/o contrase;a no validos", Toast.LENGTH_LONG).show();
                 }
@@ -276,8 +300,24 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             //e.printStackTrace();
             System.out.println("Errors:" + e.getMessage());
         }
+    }
 
-
+    @Override
+    public boolean onPrepareOptionsMenu(Menu menu) {
+        menu.clear();
+        if(isChangedStat) { //customer
+            menu.add(0, 1, 0, "Datos Personales");
+            menu.add(0, 2, 0, "Nuevo Pedido");
+            menu.add(0, 3, 0, "Pedido");
+        } else { //administrator
+            menu.add(0, 1, 0, "Categorías");
+            menu.add(0, 2, 0, "Nuevo Cliente");
+            menu.add(0, 3, 0, "Nuevo Cupón");
+            menu.add(0, 4, 0, "Nuevo Pedido");
+            menu.add(0, 5, 0, "Productos");
+            menu.add(0, 6, 0, "Reporte de Ventas");
+        }
+        return super.onPrepareOptionsMenu(menu);
     }
 
     private void deleteCustomer(final int idCustomer) {
@@ -308,8 +348,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         Dialog d = builder.create();
         d.show();
-
-
     }
 
     private void editCustomer(int idCustomer) {
@@ -333,4 +371,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         //cAdapter.notifyDataSetChanged();
         loadCustomers();
     }
+
+
 }

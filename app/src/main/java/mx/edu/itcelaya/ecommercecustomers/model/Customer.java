@@ -14,7 +14,6 @@ public class Customer {
 
     public Customer(int id, String email, String first_name,String last_name,String username,Address billing_address, Address shipping_address)
     {
-
         this.id               = id;
         this.email            = email;
         this.first_name       = first_name;
@@ -22,7 +21,6 @@ public class Customer {
         this.username         = username;
         this.billing_address  = billing_address;
         this.shipping_address = shipping_address;
-
     }
 
     public Customer() {}
