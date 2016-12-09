@@ -40,14 +40,13 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ListView list;
     List<Customer> items   = new ArrayList<Customer>();
-    public static String consumer_key    = "ck_1e92f3593393b4b67a9c36b4cc3fa39cec0494fa";
-    public static String consumer_secret = "cs_9acec12116917aaa12187e38cde674e3f1b62057";
-    public static String url = "https://10.247.67.17/store_itc/wc-api/v3/customers";
-    String auth_url = "https://10.247.67.17/store_itc/auth_users.php";
+    public static String consumer_key    = "ck_8610d1b7c089c88b439f3d8102d56ad1ef23b12f";
+    public static String consumer_secret = "cs_659b8deee047824dff82defb6354d47823b01fdb";
+    public static String url = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/customers";
+    String auth_url = "https://tapw-proyecto-c3-cari1928.c9users.io/auth_users.php";
     String jsonResult, loginResult;
     Dialog dLogin;
     CustomerAdapter cAdapter;
-
 
     Button btnAceptar, btnCancelar;
     EditText txtUsername, txtPassword;
@@ -58,16 +57,12 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         setContentView(R.layout.activity_main);
         NukeSSLCerts.nuke();
 
+        Toast.makeText(MainActivity.this, "Bienvenido", Toast.LENGTH_LONG).show();
 
         mostrarLogin();
-
         list = (ListView) findViewById(R.id.listCustomers);
-        //list = getListView();
         list.setOnItemClickListener(listenerOrdenes);
         registerForContextMenu(list);
-
-        //loadCustomers();
-
     }
 
     @Override
@@ -87,15 +82,32 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                 break;
 
             case R.id.mnuGrafica1:
-                Intent grafica1 = new Intent(this, Grafica1Activity.class);
-                startActivity(grafica1);
-                //loadSales();
+                loadSales();
                 break;
 
             default:
                 bandera = super.onOptionsItemSelected(item);
         }
         return bandera;
+    }
+
+    public void loadSales() {
+        String url_sales = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/reports/sales?filter[period]=week";
+
+        WooCommerceTask tarea = new WooCommerceTask(this, WooCommerceTask.GET_TASK, "Cargando Reporte...", new AsyncResponse() {
+            @Override
+            public void setResponse(String output) {
+                jsonResult = output;
+
+                Toast.makeText(MainActivity.this, jsonResult, Toast.LENGTH_LONG).show();
+
+                Intent intent_grafica = new Intent(MainActivity.this, Grafica1Activity.class);
+                intent_grafica.putExtra("json", jsonResult);
+                startActivity(intent_grafica);
+            }
+        });
+
+        tarea.execute(new String[] { url_sales });
     }
 
     @Override
@@ -145,6 +157,17 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         btnAceptar.setOnClickListener(this);
         btnCancelar.setOnClickListener(this);
         dLogin.show();
+    }
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.btnAceptar:
+                validaAcceso();
+                break;
+            case R.id.btnCancelar:
+                break;
+        }
     }
 
     public void loadCustomers() {
@@ -206,16 +229,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         }
     };
 
-    @Override
-    public void onClick(View view) {
-        switch (view.getId()) {
-            case R.id.btnAceptar:
-                validaAcceso();
-                break;
-            case R.id.btnCancelar:
-                break;
-        }
-    }
+
 
     private void validaAcceso () {
         String username = txtUsername.getText().toString();
@@ -254,9 +268,7 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
                     loadCustomers();
                     tvNombre.setText(nombre_completo);
                 } else {
-                    Toast.makeText(this, "" +
-                                    "Usuario y/o contrase;a no validos",
-                            Toast.LENGTH_LONG).show();
+                    Toast.makeText(this, "" + "Usuario y/o contrase;a no validos", Toast.LENGTH_LONG).show();
                 }
 
             }

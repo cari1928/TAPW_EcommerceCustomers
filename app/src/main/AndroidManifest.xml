@@ -20,6 +20,7 @@
         <activity android:name=".CustomerOrdersActivity" />
         <activity android:name=".EditCustomerActivity"></activity>
         <activity android:name=".NewCustomerActivity"></activity>
+        <activity android:name=".Grafica1Activity"></activity>
     </application>
 
 </manifest>

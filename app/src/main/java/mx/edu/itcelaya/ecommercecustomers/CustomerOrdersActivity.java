@@ -27,7 +27,7 @@ public class CustomerOrdersActivity extends ListActivity {
 
     ListView listOrders;
     //String url = "https://192.168.56.1/~niluxer/wordpress/wc-api/v3/customers/";
-    String url = "https://10.247.67.17/store_itc/wc-api/v3/customers";
+    String url = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/customers";
     String jsonResult;
     List<Order> items   = new ArrayList<Order>();
 
