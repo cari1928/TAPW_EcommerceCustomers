@@ -1,7 +1,6 @@
 package mx.edu.itcelaya.ecommercecustomers;
 
 import android.app.Dialog;
-import android.app.ListActivity;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -16,6 +15,7 @@ import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -23,7 +23,6 @@ import android.widget.Toast;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-import org.w3c.dom.Text;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -40,22 +39,25 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
     ListView list;
     List<Customer> items   = new ArrayList<Customer>();
-    public static String consumer_key    = "ck_8610d1b7c089c88b439f3d8102d56ad1ef23b12f";
-    public static String consumer_secret = "cs_659b8deee047824dff82defb6354d47823b01fdb";
-    public static String url = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/customers";
-    public static String role = "";
-    String auth_url = "https://tapw-proyecto-c3-cari1928.c9users.io/auth_users.php";
+    List<Cupones> rItems = new ArrayList<Cupones>();
+
+    public static String consumer_key    = "ck_a645f61ead6c17186e280ae58d547031078b345b";
+    public static String consumer_secret = "cs_8097a58db4fed33c44437a1296963663398b711d";
+    public static String url = "https://tapw-woocomerce-customers-cari1928.c9users.io/wc-api/v3/customers";
+    String auth_url = "https://tapw-woocomerce-customers-cari1928.c9users.io/auth_users.php";
+
     String jsonResult, loginResult;
     Dialog dLogin;
     CustomerAdapter cAdapter;
     Button btnAceptar, btnCancelar;
     EditText txtUsername, txtPassword;
+    Button btnRegresa;
+    android.app.AlertDialog dialogFoto;
 
+    //------------Menús Customer y Administrator------------
     Menu menu;
+    public static String role = "";
     private boolean isChangedStat = false;
-    private static final int MENUITEM = Menu.FIRST;
-    private static final int MENUITEM2 = 2;
-    private final int ID_MENU_EXIT = 1;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -69,8 +71,6 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list = (ListView) findViewById(R.id.listCustomers);
         list.setOnItemClickListener(listenerOrdenes);
         registerForContextMenu(list);
-
-        //loadCustomers();
     }
 
     @Override
@@ -87,6 +87,11 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
 
         if(role.equals("administrator")) {
             switch (id) {
+                case 1: //categorías
+                    //constructor(ventana de donde viene, ventana a donde va)
+                    Intent in = new Intent(MainActivity.this, segunda_ventanaActivity.class);
+                    startActivity(in);
+                    break;
                 case 2:
                     newCustomer();
                     break;
@@ -98,6 +103,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             }
         } else if(role.equals("customer")) {
             switch (id) {
+                case 1: //cupones
+                    //constructor(ventana de donde viene, ventana a donde va)
+                    Intent in = new Intent(MainActivity.this, CuponesActivity.class);
+                    in.putExtra("email", items.get(0).getEmail());
+                    startActivity(in);
+                    break;
+                case 2: //gráfica
+                    loadSales();
+                    break;
                 default:
                     bandera = super.onOptionsItemSelected(item);
             }
@@ -109,14 +123,15 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void loadSales() {
-        String url_sales = "https://tapw-proyecto-c3-cari1928.c9users.io/wc-api/v3/reports/sales?filter[period]=week";
+        //String url_sales = "https://tapw-woocomerce-customers-cari1928.c9users.io/wc-api/v3/reports/sales?filter[period]=week";
+        String url_sales = "https://tapw-woocomerce-customers-cari1928.c9users.io/wc-api/v3/customers/"+items.get(0).getId()+"/orders";
 
         WooCommerceTask tarea = new WooCommerceTask(this, WooCommerceTask.GET_TASK, "Cargando Reporte...", new AsyncResponse() {
             @Override
             public void setResponse(String output) {
                 jsonResult = output;
 
-                Toast.makeText(MainActivity.this, jsonResult, Toast.LENGTH_LONG).show();
+                //Toast.makeText(MainActivity.this, jsonResult, Toast.LENGTH_LONG).show();
 
                 Intent intent_grafica = new Intent(MainActivity.this, Grafica1Activity.class);
                 intent_grafica.putExtra("json", jsonResult);
@@ -185,6 +200,10 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             case R.id.btnCancelar:
                 break;
         }
+
+        if(view == btnRegresa) {
+            dialogFoto.dismiss();
+        }
     }
 
     public void loadCustomers() {
@@ -200,58 +219,142 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
     }
 
     public void ListCustomers() {
-
         try {
-            JSONObject jsonResponse = new JSONObject(jsonResult);
-            JSONArray jsonMainNode = jsonResponse.optJSONArray("customers");
+            JSONObject jso = new JSONObject(loginResult);
+            JSONArray jsonMainNode = jso.optJSONArray("auth");
 
             for (int i = 0; i < jsonMainNode.length(); i++) {
+
                 JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
+                Boolean valido = jsonChildNode.optBoolean("valido");
+                String rol = jsonChildNode.optString("rol");
+                String nombre_completo = jsonChildNode.optString("nombre_completo");
+                Integer id = jsonChildNode.optInt("id");
+                String user_email = jsonChildNode.optString("email");
 
-                JSONObject jsonChildNodeBillingAddress = jsonChildNode.getJSONObject("billing_address");
-                Address billingAddress = new Address(jsonChildNodeBillingAddress.getString("first_name"), jsonChildNodeBillingAddress.getString("last_name"));
-                JSONObject jsonChildNodeShippingAddress = jsonChildNode.getJSONObject("shipping_address");
-                Address shippingAddress = new Address(jsonChildNodeShippingAddress.getString("first_name"), jsonChildNodeShippingAddress.getString("last_name"));
+                if (valido == true && rol.equals("administrator")) {
+                    role = rol;
+                    isChangedStat = false;
+                    Toast.makeText(this, "Hola Administrador :)", Toast.LENGTH_LONG).show();
 
-                items.add(
-                        new Customer(
-                                jsonChildNode.optInt("id"),
-                                jsonChildNode.optString("email"),
-                                jsonChildNode.optString("first_name"),
-                                jsonChildNode.optString("last_name"),
-                                jsonChildNode.optString("username"),
-                                billingAddress,
-                                shippingAddress
-                        ));
+                } else if(valido == true && rol.equals("customer")) {
+                    dLogin.dismiss();
+
+                    items.add(new Customer(
+                            id,
+                            user_email,
+                            nombre_completo,
+                            rol
+                    ));
+
+                    role = rol;
+                    isChangedStat = true;
+
+                    cAdapter = new CustomerAdapter(this, items);
+                    list.setAdapter(cAdapter);
+                } else {
+                    Toast.makeText(this, "" + "Usuario y/o contrase;a no validos", Toast.LENGTH_LONG).show();
+                }
             }
         } catch (JSONException e) {
-            e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Error" + e.toString(),
-                    Toast.LENGTH_LONG).show();
-
+            //e.printStackTrace();
+            System.out.println("Errors:" + e.getMessage());
         }
-
-        cAdapter = new CustomerAdapter(this, items);
-
-        list.setAdapter(cAdapter);
     }
 
     AdapterView.OnItemClickListener listenerOrdenes = new AdapterView.OnItemClickListener() {
         @Override
         public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-            //Toast.makeText(MainActivity.this, view.getTag() + "", Toast.LENGTH_LONG).show();
-            Intent intent = new Intent(MainActivity.this, CustomerOrdersActivity.class);
-            intent.putExtra("id_customer", view.getTag().toString());
-            startActivity(intent);
+            rItems = new ArrayList<>();
+            Customer customer = items.get(i); //posición
+            //Toast.makeText(getBaseContext(), "Nombre " + customer.getFull_name(), Toast.LENGTH_LONG).show();
+            loadCupones();
         }
     };
 
+    public void loadCupones() {
+        url = "https://tapw-woocomerce-customers-cari1928.c9users.io/wc-api/v3/coupons";
+        LoadCuponesTask tarea = new LoadCuponesTask(this, consumer_key, consumer_secret);
+        try {
+            jsonResult = tarea.execute(new String[] { url }).get();
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        } catch (ExecutionException e) {
+            e.printStackTrace();
+        }
+        //Toast.makeText(getBaseContext(), jsonResult, Toast.LENGTH_LONG).show();
 
+        ListCupones();
+    }
+    
+    public void ListCupones() {
+        try {
+            String email = items.get(0).getEmail();
+            JSONObject jsonResponse = new JSONObject(jsonResult);
+            JSONArray jsonMainNode = jsonResponse.optJSONArray("coupons");
+
+            for (int i = 0; i < jsonMainNode.length(); i++) {
+                JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
+
+                Integer id = jsonChildNode.optInt("id");
+                String code = jsonChildNode.optString("code");
+                String expiry_date = jsonChildNode.optString("expiry_date");
+
+                JSONArray jsonEmails = jsonChildNode.getJSONArray("customer_emails");
+                String emails = jsonEmails + "";
+
+                Boolean flag = false;
+                for (int j = 0; j < jsonEmails.length(); j++){
+                    //Toast.makeText(getApplicationContext(), "Email: " + email, Toast.LENGTH_LONG).show();
+                    //Toast.makeText(getApplicationContext(), "Emails: " + jsonEmails.optString(j), Toast.LENGTH_LONG).show();
+                    if(email.equalsIgnoreCase(jsonEmails.optString(j))) { //si los correos son iguales
+                        flag = true;
+                        break;
+                    }
+                }
+
+                if(flag) {
+                    rItems.add(new Cupones(
+                            id,
+                            code,
+                            expiry_date,
+                            emails
+                    ));
+                }
+            }
+
+            //para mostrar los reviews
+            android.app.AlertDialog.Builder builder = new android.app.AlertDialog.Builder(this); //recibe el contexto de la app
+            LinearLayout layout1 = new LinearLayout(this); //para colocar en él los elementos
+            layout1.setOrientation(LinearLayout.VERTICAL);
+
+            //nuevo listview en conjunto con un arrayadapter
+            ListView vReviews = new ListView(this);
+            vReviews.setAdapter(new CuponesAdapter(this, rItems));
+
+            //boton
+            btnRegresa = new Button(this);
+            btnRegresa.setText("Cerrar");
+            btnRegresa.setOnClickListener(this);
+
+            //se pasan los elementos al layout
+            layout1.addView(vReviews);
+            layout1.addView(btnRegresa);
+
+            builder.setView(layout1); //se le pasa el layout a builder
+            dialogFoto = builder.create(); //se termina de crear el dialogo
+            dialogFoto.show(); //se muestra el dialogo
+
+        } catch (JSONException e) {
+            e.printStackTrace();
+            Toast.makeText(getApplicationContext(), "Error" + e.toString(), Toast.LENGTH_LONG).show();
+
+        }
+    }
 
     private void validaAcceso () {
         String username = txtUsername.getText().toString();
         String password = txtPassword.getText().toString();
-        TextView tvNombre = (TextView) findViewById(R.id.user);
 
         LoginTask tarea = new LoginTask(this);
         tarea.setUsername(username);
@@ -266,49 +369,18 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
             System.out.println("Error..." + e.getMessage());
         }
 
-        Toast.makeText(MainActivity.this, loginResult, Toast.LENGTH_SHORT).show();
+        //Toast.makeText(MainActivity.this, loginResult, Toast.LENGTH_SHORT).show();
 
-        //creación de web service propio
-        try {
-            JSONObject jso = new JSONObject(loginResult);
-            JSONArray jsonMainNode = jso.optJSONArray("auth");
-
-            for (int i = 0; i < jsonMainNode.length(); i++) {
-
-                JSONObject jsonChildNode = jsonMainNode.getJSONObject(i);
-                Boolean valido = jsonChildNode.optBoolean("valido");
-                String rol = jsonChildNode.optString("rol");
-                String nombre_completo = jsonChildNode.optString("nombre_completo");
-
-                if (valido == true && rol.equals("administrator")) {
-                    dLogin.dismiss();
-                    loadCustomers();
-                    tvNombre.setText(nombre_completo);
-                    role = rol;
-                    isChangedStat = false;
-                } else if(valido == true && rol.equals("customer")) {
-                    dLogin.dismiss();
-                    tvNombre.setText(nombre_completo);
-                    role = rol;
-                    isChangedStat = true;
-                } else {
-                    Toast.makeText(this, "" + "Usuario y/o contrase;a no validos", Toast.LENGTH_LONG).show();
-                }
-
-            }
-        } catch (JSONException e) {
-            //e.printStackTrace();
-            System.out.println("Errors:" + e.getMessage());
-        }
+        ListCustomers();
     }
 
     @Override
     public boolean onPrepareOptionsMenu(Menu menu) {
         menu.clear();
         if(isChangedStat) { //customer
-            menu.add(0, 1, 0, "Datos Personales");
-            menu.add(0, 2, 0, "Nuevo Pedido");
-            menu.add(0, 3, 0, "Pedido");
+            menu.add(0, 1, 0, "Cupones");
+            menu.add(0, 2, 0, "Gráfica Órdenes");
+            //menu.add(0, 3, 0, "Pedido");
         } else { //administrator
             menu.add(0, 1, 0, "Categorías");
             menu.add(0, 2, 0, "Nuevo Cliente");
@@ -369,7 +441,8 @@ public class MainActivity extends AppCompatActivity implements View.OnClickListe
         list.setAdapter(null);
         cAdapter.customers.clear();
         //cAdapter.notifyDataSetChanged();
-        loadCustomers();
+        //loadCustomers();
+        ListCustomers();
     }
 
 

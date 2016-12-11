@@ -12,6 +12,7 @@ import com.github.mikephil.charting.data.BarDataSet;
 import com.github.mikephil.charting.data.BarEntry;
 import com.github.mikephil.charting.utils.ColorTemplate;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -66,39 +67,25 @@ public class Grafica1Activity extends AppCompatActivity {
 
         try {
             JSONObject jsonResponse = new JSONObject(jsonResult);
-            //JSONArray jsonMainNode = jsonResponse.optJSONArray("sales");
-            JSONObject jsonChildNode = jsonResponse.getJSONObject("sales");
+            JSONArray jsonMainNode = jsonResponse.optJSONArray("orders");
+            JSONObject jsonChildNode = jsonMainNode.getJSONObject(0);
 
-            //System.out.println("total sales: " + jsonChildNode.getString("total_sales"));
-            //System.out.println("totals: " + jsonChildNode.getJSONObject("totals"));
+            String id = jsonChildNode.optString("id");
+            JSONArray jsonLineItems = jsonChildNode.optJSONArray("line_items");
 
-            JSONObject jsonTotalsNode = jsonChildNode.getJSONObject("totals");
+            for (int i = 0; i < jsonLineItems.length(); i++) {
+                JSONObject jsonInfo = jsonLineItems.optJSONObject(i);
+                String subtotal = jsonInfo.optString("subtotal");
 
-            Iterator<String> itr = jsonTotalsNode.keys();
-
-            int cont = 0;
-            while(itr.hasNext()) {
-
-                Object element = itr.next();
-                String fecha = element.toString();
-                JSONObject jsonTotalsNodeObj = jsonTotalsNode.getJSONObject(fecha);
-                String sales = jsonTotalsNodeObj.getString("sales");
-                System.out.println(fecha + "->" + sales + " ");
-                //if (Float.valueOf(sales) > 0.0) {
-                datos.add(new BarEntry(cont, Float.valueOf(sales)));
-                cont++;
-                //}
+                if (Float.valueOf(subtotal) > 0.0) {
+                    datos.add(new BarEntry(i, Float.valueOf(subtotal)));
+                }
             }
-
         } catch (JSONException e) {
             e.printStackTrace();
-            Toast.makeText(getApplicationContext(), "Error" + e.toString(),
-                    Toast.LENGTH_LONG).show();
-
+            Toast.makeText(getApplicationContext(), "Error" + e.toString(), Toast.LENGTH_LONG).show();
         }
-
         generaGrafica();
-
     }
 
     private void generaGrafica() {
@@ -106,7 +93,7 @@ public class Grafica1Activity extends AppCompatActivity {
         BarEntry v1 = datos.get(0);
         System.out.println("Valor 1" + v1.toString() + v1.getY());
 
-        BarDataSet dataset = new BarDataSet(datos, "Total Ventas por dia");
+        BarDataSet dataset = new BarDataSet(datos, "Gasto en Órdenes");
         dataset.setColors(ColorTemplate.COLORFUL_COLORS);
         BarData data = new BarData(dataset);
         //b1 = (BarChart) findViewById(R.id.bar1);

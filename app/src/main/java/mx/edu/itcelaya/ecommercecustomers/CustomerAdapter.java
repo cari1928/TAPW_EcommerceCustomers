@@ -65,12 +65,14 @@ public class CustomerAdapter extends BaseAdapter {
         }
 
         TextView tvNombre   = (TextView) rowView.findViewById(R.id.tvNombre);
+        TextView tvRol = (TextView) rowView.findViewById(R.id.tvRol);
         TextView tvEmail  = (TextView) rowView.findViewById(R.id.tvEmail);
         img1 = (ImageView) rowView.findViewById(R.id.avatarCustomer);
 
         final Customer item = this.customers.get(position);
-        tvNombre.setText(item.getFirst_name() + " " + item.getLast_name() );
+        tvNombre.setText(item.getFull_name());
         tvEmail.setText(item.getEmail());
+        tvRol.setText(item.getUsername());
         rowView.setTag(item.getId());
         //String sUrl = item.getImageUrl();
 
@@ -93,9 +95,7 @@ public class CustomerAdapter extends BaseAdapter {
 
                     LinearLayout layout1 = new LinearLayout(context);
                     layout1.setOrientation(LinearLayout.VERTICAL);
-                    layout1.addView(ivFoto);
-                    layout1.addView(tvNombre);
-                    //builder.setView(ivFoto);
+
                     builder.setView(layout1);
                     AlertDialog dialogFoto = builder.create();
                     dialogFoto.show();

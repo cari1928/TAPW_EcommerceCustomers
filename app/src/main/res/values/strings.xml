@@ -1,3 +1,4 @@
 <resources>
-    <string name="app_name">Ecommerce Videogames</string>
+    <string name="app_name">Ecommerce_Customers_C9</string>
+    <string name="title_activity_segunda_ventana">segunda_ventana</string>
 </resources>

@@ -87,16 +87,7 @@ public class EditCustomerActivity extends Activity implements View.OnClickListen
             JSONObject jsonChildNodeShippingAddress = jsonChildNode.getJSONObject("shipping_address");
             Address shippingAddress = new Address(jsonChildNodeShippingAddress.getString("first_name"), jsonChildNodeShippingAddress.getString("last_name"));
 
-            customer =
-                    new Customer(
-                            jsonChildNode.getInt("id"),
-                            jsonChildNode.getString("email"),
-                            jsonChildNode.getString("first_name"),
-                            jsonChildNode.getString("last_name"),
-                            jsonChildNode.getString("username"),
-                            billingAddress,
-                            shippingAddress
-                    );
+
             //System.out.println("Nombres: " + jsonChildNode.getString("first_name"));
             //System.out.println("Apellidos: " + jsonChildNode.getString("last_name"));
 
@@ -107,8 +98,6 @@ public class EditCustomerActivity extends Activity implements View.OnClickListen
 
         }
 
-        txtNombres.setText(customer.getFirst_name());
-        txtApellidos.setText(customer.getLast_name());
         txtEmail.setText(customer.getEmail());
     }
 
@@ -133,8 +122,7 @@ public class EditCustomerActivity extends Activity implements View.OnClickListen
                 finish();
             }
         });
-        customer.setFirst_name(txtNombres.getText().toString());
-        customer.setLast_name(txtApellidos.getText().toString());
+
         customer.setEmail(txtEmail.getText().toString());
         tarea.setObject(customer);
 

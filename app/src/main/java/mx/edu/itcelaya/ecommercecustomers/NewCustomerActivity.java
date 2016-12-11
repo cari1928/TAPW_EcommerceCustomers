@@ -67,12 +67,9 @@ public class NewCustomerActivity extends Activity implements View.OnClickListene
             }
         });
 
-        customer.setFirst_name(txtNombres.getText().toString());
-        customer.setLast_name(txtApellidos.getText().toString());
+       ;
         customer.setEmail(txtEmail.getText().toString());
         customer.setUsername(txtUsuario.getText().toString());
-        customer.setBilling_address(new Address(txtNombres.getText().toString(), txtApellidos.getText().toString()));
-        customer.setShipping_address(new Address(txtNombres.getText().toString(), txtApellidos.getText().toString()));
 
         tarea.setObject(customer);
 

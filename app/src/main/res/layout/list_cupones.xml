@@ -1,15 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:orientation="horizontal" android:layout_width="match_parent"
+    android:orientation="vertical" android:layout_width="match_parent"
     android:layout_height="match_parent">
-
-    <ImageView
-        android:id="@+id/avatarCustomer"
-        android:layout_width="150px"
-        android:layout_height="150px"
-        android:layout_alignParentLeft="true"
-        android:contentDescription="@string/app_name"
-        android:layout_marginRight="10px"/>
 
     <LinearLayout
         android:layout_width="match_parent"
@@ -26,23 +18,12 @@
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"/>
         <TextView
-            android:text="E-Mail"
+            android:text="Fecha de Expiración"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceLarge"/>
         <TextView
-            android:id="@+id/tvEmail"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceMedium"/>
-
-        <TextView
-            android:text="Rol"
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:textAppearance="?android:attr/textAppearanceLarge"/>
-        <TextView
-            android:id="@+id/tvRol"
+            android:id="@+id/tvDate"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:textAppearance="?android:attr/textAppearanceMedium"/>

@@ -17,13 +17,10 @@ public class Json {
             JSONObject jsonObj = new JSONObject();
 
             jsonObj.put("email", customer.getEmail());
-            jsonObj.put("first_name", customer.getFirst_name());
-            jsonObj.put("last_name", customer.getLast_name());
+            jsonObj.put("nombre_completo", customer.getFull_name());
             jsonObj.put("username", customer.getUsername());
 
             JSONObject jsonBillingAddress = new JSONObject(); // Another object to store the address
-            jsonBillingAddress.put("first_name", customer.getBilling_address().getFirst_name());
-            jsonBillingAddress.put("last_name", customer.getBilling_address().getLast_name());
             jsonBillingAddress.put("company", "");
             jsonBillingAddress.put("address_1", "969 Market");
             jsonBillingAddress.put("address_2", "");
@@ -38,8 +35,6 @@ public class Json {
 
 
             JSONObject jsonShippingAddress = new JSONObject(); // Another object to store the address
-            jsonShippingAddress.put("first_name", customer.getShipping_address().getFirst_name());
-            jsonShippingAddress.put("last_name", customer.getShipping_address().getLast_name());
             jsonShippingAddress.put("company", "");
             jsonShippingAddress.put("address_1", "969 Market");
             jsonShippingAddress.put("address_2", "");
